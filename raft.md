@@ -122,4 +122,5 @@ raft选主为多数原则，即超过半数的server赞成，则选主流程结�
 
 # 3 参考链接
 [http://thesecretlivesofdata.com/raft/#home](http://thesecretlivesofdata.com/raft/#home)
+
 [https://raft.github.io/](https://raft.github.io/)
