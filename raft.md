@@ -25,13 +25,11 @@ raft的作者认为paxos有两个“缺点”：1）paxos非常难理解。2）p
 - candidate
    - 每个想要成为leader的follower，都会先从follower变为candidate状态
    - candidate先给自己投一票，如果能够获得集群中大多数投票则成功成为leader
-
-![image.png](https://intranetproxy.alipay.com/skylark/lark/0/2021/png/326239/1632043817635-5bddfb66-d622-4ab9-ab05-04404acc2157.png#height=206&id=j25Th&margin=%5Bobject%20Object%5D&name=image.png&originHeight=412&originWidth=888&originalType=binary&ratio=1&size=147643&status=done&style=none&width=444)
+![](/_image/2021-09-22/87178dfe9b64a8841de5e9fc524752e8.png)
 集群中一个server的状态机如上图。简单起见，后面说的leader大多都是指【状态为leader的server】，follower/candidate同理。
 ​
 正常情况下，集群只会有一个leader，多个follower/candidate。leader负责处理所有client的请求，而follower/candidate只和leader通信。**（一个集群中能否有两个leader？是否可行？两个leader相比一个leader又有什么好处/坏处？）**
 历史的车轮滚滚向前，朝代更替，永不停息。raft的世界亦如是，每个leader的诞生都伴随着一次或多次竞选（election），每一次竞选都会有一个或者多个follower变为candidate参加竞选，而每一次竞选的开始都意味着一个term的开始，每个term对应一个term number（此term number只增不减），因此，term number可称之为raft集群中的逻辑时钟(logical clock)。**（为什么要专门搞个term number呢？用时间值不是更准确？万一有人有类似疑问，可以学习 分布式时钟 相关知识）**
-![image.png](https://intranetproxy.alipay.com/skylark/lark/0/2021/png/326239/1632042837508-0ecc2902-eabe-410e-b6dd-08e17517a933.png#height=150&id=Gddfn&margin=%5Bobject%20Object%5D&name=image.png&originHeight=300&originWidth=738&originalType=binary&ratio=1&size=69155&status=done&style=none&width=369)**​**
 正如前面说的，一个term开始于一次竞选，而term以何种方式结束取决于竞选结果。如果竞选中没有一个candidate获得大多数的投票，则认为大家都竞选失败，此次term结束，开始下一轮竞选，如上图中t3。如果有candidate成功成为leader，则在该leader不再是leader之前称之为一个term，如上图term1 term2 term4...
 ​
 
@@ -86,9 +84,9 @@ raft选主为多数原则，即超过半数的server赞成，则选主流程结�
 
 举例如下：
 如下图，假设集群初始化时，所有server端配置为图中给定值。
-![raft01.jpeg](https://intranetproxy.alipay.com/skylark/lark/0/2021/jpeg/326239/1624026911244-8a964c75-c84c-41d3-af99-719f59401b6b.jpeg#height=277&id=ud46a4e2d&margin=%5Bobject%20Object%5D&name=raft01.jpeg&originHeight=898&originWidth=1809&originalType=binary&ratio=1&size=182094&status=done&style=none&width=559)
+![](/_image/2021-09-22/44dfad80c2e9c5026f5246181d5d7397.jpg)
 显然，S2的election timeout最小，因此，S2会成为candidate，重置自己的election timeout，并将term number +1，然后投自己一票后向其他server发出RequestVote RPC，如下图：
-![IMG_9C2DDA1E0957-1.jpeg](https://intranetproxy.alipay.com/skylark/lark/0/2021/jpeg/326239/1632045863460-37726f57-118a-4316-92c9-3902dd3f944a.jpeg#height=299&id=dOuvQ&margin=%5Bobject%20Object%5D&name=IMG_9C2DDA1E0957-1.jpeg&originHeight=960&originWidth=1785&originalType=binary&ratio=1&size=194863&status=done&style=none&width=556)
+![](/_image/2021-09-22/7e590f6b57b9d80704fb3410d3fb0b3a.jpg)
 如果S2很幸运的得到了大多数server的同意，则成为leader；
 
 
